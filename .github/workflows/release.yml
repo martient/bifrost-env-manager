@@ -30,7 +30,7 @@ jobs:
           version: latest
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
   goreleaser-nightly:
     if: ${{ github.ref_name == 'develop' }}
@@ -49,4 +49,4 @@ jobs:
           version: latest
           args: release --clean --nightly
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
