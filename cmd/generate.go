@@ -10,6 +10,7 @@ import (
 )
 
 var newEnvFilePath string
+var readOnlyEnvFilesPath string
 
 // generateCmd represents the load command
 var generateCmd = &cobra.Command{
@@ -23,13 +24,14 @@ var generateCmd = &cobra.Command{
 		}
 		defer jsonFile.Close()
 		byteValue, _ := io.ReadAll(jsonFile)
-		environmentmanager.GenerateEnvFile(byteValue, newEnvFilePath)
+		environmentmanager.GenerateEnvFile(byteValue, newEnvFilePath, readOnlyEnvFilesPath)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
 	rootCmd.PersistentFlags().StringVar(&newEnvFilePath, "path", "", "Path for the new file folder, ex: /home/ubuntu/code/")
+	rootCmd.PersistentFlags().StringVar(&readOnlyEnvFilesPath, "read-only-env", "", "Path for read-only environement config, ex: \".api.env;.redis.env\"")
 
 	// Here you will define your flags and configuration settings.
 

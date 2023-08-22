@@ -1,6 +1,7 @@
 # Add 'repo' label to any root file changes
 'repository config':
 - '.github/**'
+- '.vscode/**'
 
 cli:
 - 'cmd/**'

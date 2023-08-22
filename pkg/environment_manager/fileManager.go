@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func GenerateEnvFile(configJSON []byte, newEnvFilePath string) {
+func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesPath string) {
 	rand.Seed(time.Now().UnixNano())
 
 	var config Config
@@ -21,6 +21,7 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string) {
 		return
 	}
 	generateEnvVariables(&config)
+	generateReadOnlyVariables(&config, readOnlyEnvFilesPath)
 
 	err = generateStaticVariables(&config, jsonRead)
 	if err != nil {
@@ -59,6 +60,44 @@ func generateEnvVariables(config *Config) {
 	for _, e := range os.Environ() {
 		pair := strings.SplitN(e, "=", 2)
 		config.EnvVariables = append(config.EnvVariables, Variable{Key: pair[0], Value: pair[1]})
+	}
+}
+
+func readEnvFile(filePath string) ([]string, error) {
+	_, err := os.Stat(filePath)
+
+	if err == nil {
+		envContent, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, err
+		}
+
+		lines := strings.Split(string(envContent), "\n")
+		return lines, nil
+	} else {
+		return nil, err
+	}
+}
+
+func generateReadOnlyVariables(config *Config, readOnlyEnvFilesPath string) {
+	if readOnlyEnvFilesPath != "" {
+		files := strings.Split(readOnlyEnvFilesPath, ";")
+
+		for _, file := range files {
+			lines, err := readEnvFile(file)
+
+			if err != nil {
+				logError("Error parsing existing env files:", err)
+				continue
+			}
+
+			for _, line := range lines {
+				parts := strings.SplitN(line, "=", 2)
+				if len(parts) == 2 {
+					config.ReadOnlyVariables = append(config.ReadOnlyVariables, Variable{Key: parts[0], Value: parts[1]})
+				}
+			}
+		}
 	}
 }
 
@@ -137,6 +176,7 @@ func generateCustomValueVariables(config *Config, jsonRead map[string]interface{
 			var value string = replacePlaceholders(line, CustomValues)
 			value = replacePlaceholders(value, config.StaticVariables)
 			value = replacePlaceholders(value, config.RandomValueVariables)
+			value = replacePlaceholders(value, config.ReadOnlyVariables)
 			value = replacePlaceholders(value, config.EnvVariables)
 			config.CustomValueVariables = append(config.CustomValueVariables, Variable{Key: key, Value: value})
 		}
@@ -154,18 +194,16 @@ func replacePlaceholders(line string, values []Variable) string {
 func writeVariablesToFile(config *Config, outputFilePath string) error {
 	var existingVars []EnvFileVariable
 
-	if _, err := os.Stat(outputFilePath); err == nil {
-		envContent, err := os.ReadFile(outputFilePath)
-		if err != nil {
-			return err
-		}
+	readEnvFileLines, err := readEnvFile(outputFilePath)
 
-		lines := strings.Split(string(envContent), "\n")
-		for _, line := range lines {
-			parts := strings.SplitN(line, "=", 2)
-			if len(parts) == 2 {
-				existingVars = append(existingVars, EnvFileVariable{Key: parts[0], Value: parts[1], Exist: true})
-			}
+	if err != nil {
+		logDebug("Error parsing existing env files:", err)
+	}
+
+	for _, line := range readEnvFileLines {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			existingVars = append(existingVars, EnvFileVariable{Key: parts[0], Value: parts[1], Exist: true})
 		}
 	}
 
@@ -197,7 +235,7 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 
 	content := strings.Join(lines, "\n")
 
-	err := os.WriteFile(outputFilePath, []byte(content), 0644)
+	err = os.WriteFile(outputFilePath, []byte(content), 0644)
 	if err != nil {
 		return err
 	}

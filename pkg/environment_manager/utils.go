@@ -1,5 +1,9 @@
 package environmentmanager
 
+import (
+	log "github.com/sirupsen/logrus"
+)
+
 func intOrDefault(value interface{}, defaultValue int) int {
 	if v, ok := value.(float64); ok {
 		return int(v)
@@ -19,4 +23,28 @@ func boolOrDefault(value interface{}, defaultValue bool) bool {
 		return v
 	}
 	return defaultValue
+}
+
+func logInfo(message string, args interface{}) {
+	log.WithFields(log.Fields{
+		"service": "Environment manager",
+	}).Infof(message, args)
+}
+
+func logWarning(message string, args interface{}) {
+	log.WithFields(log.Fields{
+		"service": "Environment manager",
+	}).Warnf(message, args)
+}
+
+func logError(message string, args interface{}) {
+	log.WithFields(log.Fields{
+		"service": "Environment manager",
+	}).Errorf(message, args)
+}
+
+func logDebug(message string, args interface{}) {
+	log.WithFields(log.Fields{
+		"service": "Environment manager",
+	}).Debugf(message, args)
 }
