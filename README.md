@@ -91,17 +91,17 @@ Using config file: config.json
 ##### Specific config
 
 ``` shell
-❯ bifrost-env-manager generate --path /Users/martient/Documents/bifrost-env-manager/bin
+❯ bifrost-env-manager generate --config config.json
 Using config file: config.json
 /somewhere/else/example.env file generated successfully!
 ```
 
 ##### Specific file path
 
-``` json
-❯ bifrost-env-manager generate
+``` shell
+❯ bifrost-env-manager generate --path /somewhere/else/
 Using config file: config.json
-.example.env file generated successfully!
+/somewhere/else/example.env file generated successfully!
 ```
 
 ### Config
