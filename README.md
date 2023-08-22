@@ -69,10 +69,11 @@ Available Commands:
   help        Help about any command
 
 Flags:
-      --config string          config file for this software environement
+      --config string          config file for this software environement (default "config.json")
       --disable-update-check   Disable auto update checking before execution
   -h, --help                   help for Bifrost-env-manager
       --path string            Path for the new file folder, ex: /home/ubuntu/code/
+      --read-only-env string   Path for read-only environement config, ex: ".api.env;.redis.env"
   -t, --toggle                 Help message for toggle
 
 Use "Bifrost-env-manager [command] --help" for more information about a command.
@@ -102,6 +103,18 @@ Using config file: config.json
 ❯ bifrost-env-manager generate --path /somewhere/else/
 Using config file: config.json
 /somewhere/else/.example.env file generated successfully!
+```
+
+##### Existing env
+
+If you have previously defined variables, such as a password for a database or any other data, you can provide these variables to the manager. The manager can then read the existing data and use it to create new custom variables.
+
+Additionally, you have the option to include multiple files in this process. To do so, ensure you separate each file by using a ';' as a delimiter.
+
+``` shell
+❯ bifrost-env-manager generate --read-only-env .postgresql.env;.redis.env
+Using config file: config.json
+.example.env file generated successfully!
 ```
 
 ### Config
