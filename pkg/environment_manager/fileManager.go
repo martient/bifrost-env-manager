@@ -52,7 +52,7 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string) {
 		return
 	}
 
-	fmt.Println(".env file generated successfully!")
+	fmt.Printf("%s file generated successfully!\n", outputFilePath)
 }
 
 func generateEnvVariables(config *Config) {
