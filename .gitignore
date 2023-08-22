@@ -2,3 +2,4 @@
 bin
 config.json
 example.config.json
+bifrost-env-manager

@@ -2,14 +2,15 @@ package environmentmanager
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/martient/bifrost-env-manager/pkg/utils"
 )
 
-func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesPath string) {
+func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesPath string) int {
 	rand.Seed(time.Now().UnixNano())
 
 	var config Config
@@ -17,26 +18,26 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 	err := json.Unmarshal([]byte(configJSON), &config)
 	json.Unmarshal([]byte(configJSON), &jsonRead)
 	if err != nil {
-		fmt.Println("Error parsing config JSON:", err)
-		return
+		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		return 1
 	}
 	generateEnvVariables(&config)
 	generateReadOnlyVariables(&config, readOnlyEnvFilesPath)
 
 	err = generateStaticVariables(&config, jsonRead)
 	if err != nil {
-		fmt.Println("Error parsing config JSON:", err)
-		return
+		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		return 1
 	}
 	err = generateRandomValueVariables(&config, jsonRead)
 	if err != nil {
-		fmt.Println("Error parsing config JSON:", err)
-		return
+		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		return 1
 	}
 	err = generateCustomValueVariables(&config, jsonRead)
 	if err != nil {
-		fmt.Println("Error parsing config JSON:", err)
-		return
+		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		return 1
 	}
 
 	var fileName string = ""
@@ -49,11 +50,12 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 
 	err = writeVariablesToFile(&config, outputFilePath)
 	if err != nil {
-		fmt.Println("Error writing to .env file:", err)
-		return
+		utils.LogError("Error writing to .env file:", err, "Environment manager")
+		return 1
 	}
 
-	fmt.Printf("%s file generated successfully!\n", outputFilePath)
+	utils.LogInfo("%s file generated successfully!\n", outputFilePath, "Environment manager")
+	return 0
 }
 
 func generateEnvVariables(config *Config) {
@@ -87,7 +89,7 @@ func generateReadOnlyVariables(config *Config, readOnlyEnvFilesPath string) {
 			lines, err := readEnvFile(file)
 
 			if err != nil {
-				logError("Error parsing existing env files:", err)
+				utils.LogError("Error parsing existing env files: %s", err, "Environment manager")
 				continue
 			}
 
@@ -125,12 +127,12 @@ func generateRandomValueVariables(config *Config, jsonRead map[string]interface{
 }
 
 func generateRandomValue(settings map[string]interface{}) string {
-	length := intOrDefault(settings["length"], 16)
-	availableCharacters := stringOrDefault(settings["available_character"], "")
-	asSpecialCharacter := boolOrDefault(settings["as_special_character"], true)
-	asUpperCase := boolOrDefault(settings["as_upper_case"], true)
-	asLowerCase := boolOrDefault(settings["as_lower_case"], true)
-	asDigit := boolOrDefault(settings["as_digit"], true)
+	length := utils.IntOrDefault(settings["length"], 16)
+	availableCharacters := utils.StringOrDefault(settings["available_character"], "")
+	asSpecialCharacter := utils.BoolOrDefault(settings["as_special_character"], true)
+	asUpperCase := utils.BoolOrDefault(settings["as_upper_case"], true)
+	asLowerCase := utils.BoolOrDefault(settings["as_lower_case"], true)
+	asDigit := utils.BoolOrDefault(settings["as_digit"], true)
 
 	availableChars := ""
 	if availableCharacters != "" {
@@ -197,7 +199,7 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 	readEnvFileLines, err := readEnvFile(outputFilePath)
 
 	if err != nil {
-		logDebug("Error parsing existing env files:", err)
+		utils.LogDebug("Error parsing existing env files: %s", err, "Environment manager")
 	}
 
 	for _, line := range readEnvFileLines {
