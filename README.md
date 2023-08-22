@@ -62,7 +62,7 @@ If a value enclosed in {{ }} is not defined here, the tool will search in random
 Software environement files manager
 
 Usage:
-  Bifrost-env-manager [command]
+  bifrost-env-manager [command]
 
 Available Commands:
   generate    Generate a new version of the env file
@@ -75,8 +75,10 @@ Flags:
       --path string            Path for the new file folder, ex: /home/ubuntu/code/
       --read-only-env string   Path for read-only environement config, ex: ".api.env;.redis.env"
   -t, --toggle                 Help message for toggle
+  -v, --version                version for Bifrost-env-manager
+  -y, --yes                    Auto accept manual question y/n
 
-Use "Bifrost-env-manager [command] --help" for more information about a command.
+Use "bifrost-env-manager [command] --help" for more information about a command.
 ```
 
 #### Command
@@ -115,6 +117,20 @@ Additionally, you have the option to include multiple files in this process. To 
 ❯ bifrost-env-manager generate --read-only-env .postgresql.env;.redis.env
 Using config file: config.json
 .example.env file generated successfully!
+```
+
+##### Skip update
+
+``` shell
+❯ bifrost-env-manager generate --disable-update-check
+```
+
+##### Auto accept
+
+Use with caution, can override config or version
+
+``` shell
+❯ bifrost-env-manager generate --yes
 ```
 
 ### Config
