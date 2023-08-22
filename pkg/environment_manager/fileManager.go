@@ -176,6 +176,7 @@ func generateCustomValueVariables(config *Config, jsonRead map[string]interface{
 			var value string = replacePlaceholders(line, CustomValues)
 			value = replacePlaceholders(value, config.StaticVariables)
 			value = replacePlaceholders(value, config.RandomValueVariables)
+			value = replacePlaceholders(value, config.ReadOnlyVariables)
 			value = replacePlaceholders(value, config.EnvVariables)
 			config.CustomValueVariables = append(config.CustomValueVariables, Variable{Key: key, Value: value})
 		}
