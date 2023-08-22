@@ -73,6 +73,6 @@ jobs:
         with:
           distribution: goreleaser
           version: latest
-          args: release --clean --nightly
+          args: release --clean
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
