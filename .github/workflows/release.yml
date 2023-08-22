@@ -47,7 +47,7 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           PATCH_STRING_TOKEN: "fix"
           MINOR_STRING_TOKEN: "feat"
-          NONE_STRING_TOKEN: "*"
+          NONE_STRING_TOKEN: " "
           
   nightly:
     if: ${{ github.ref_name == 'develop' }}
@@ -66,7 +66,7 @@ jobs:
           PRERELEASE: true
           PATCH_STRING_TOKEN: "fix"
           MINOR_STRING_TOKEN: "feat"
-          NONE_STRING_TOKEN: "*"
+          NONE_STRING_TOKEN: " "
 
       - uses: actions/checkout@v3
         with:
