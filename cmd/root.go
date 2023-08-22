@@ -13,8 +13,8 @@ var jsonConfigFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "Bifrost-env-manager",
-	Short: "A brief description of your application",
-	Long:  `A longer description that spans multiple lines and likely contains`,
+	Short: "Env files manager",
+	Long:  `Software environement files manager`,
 	// examples and usage of using your application. For example:
 
 	// Cobra is a CLI library for Go that empowers applications.
@@ -41,6 +41,10 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolP("disable-update-check", "", false, "Disable auto update checking before execution")
+
+	// rootCmd.PersistentFlags().CallbackVarP(runner.GetUpdateCallback(), "update", "up", "update notify to latest version")
+	// rootCmd.PersistentFlags().BoolVarP(&options.DisableUpdateCheck, "disable-update-check", "duc", false, "disable automatic notify update check")
 }
 
 func initConfig() {
@@ -49,6 +53,8 @@ func initConfig() {
 	} else {
 		os.Exit(1)
 	}
+
+	fmt.Println(rootCmd.Flag("disable-update-check").Value)
 
 	viper.AutomaticEnv() // read in environment variables that match
 

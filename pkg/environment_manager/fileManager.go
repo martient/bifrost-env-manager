@@ -20,6 +20,8 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string) {
 		fmt.Println("Error parsing config JSON:", err)
 		return
 	}
+	generateEnvVariables(&config)
+
 	err = generateStaticVariables(&config, jsonRead)
 	if err != nil {
 		fmt.Println("Error parsing config JSON:", err)
@@ -53,12 +55,18 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string) {
 	fmt.Println(".env file generated successfully!")
 }
 
+func generateEnvVariables(config *Config) {
+	for _, e := range os.Environ() {
+		pair := strings.SplitN(e, "=", 2)
+		config.EnvVariables = append(config.EnvVariables, Variable{Key: pair[0], Value: pair[1]})
+	}
+}
+
 func generateStaticVariables(config *Config, jsonRead map[string]interface{}) error {
 	for _, variable := range jsonRead["static_variables"].([]interface{}) {
 		if v, ok := variable.(map[string]interface{}); ok {
 			for key, value := range v {
-				var newStaticVariable Variable = Variable{Key: key, Value: value.(string)}
-				config.StaticVariables = append(config.StaticVariables, newStaticVariable)
+				config.StaticVariables = append(config.StaticVariables, Variable{Key: key, Value: value.(string)})
 			}
 		}
 	}
@@ -78,15 +86,15 @@ func generateRandomValueVariables(config *Config, jsonRead map[string]interface{
 }
 
 func generateRandomValue(settings map[string]interface{}) string {
-	lenght := int(settings["lenght"].(float64))
-	availableCharacters, hasAvailableCharacters := settings["available_character"].(string)
-	asSpecialCharacter := settings["as_special_character"].(bool)
-	asUpperCase := settings["as_upper_case"].(bool)
-	asLowerCase := settings["as_lower_case"].(bool)
-	asDigit := settings["as_diggit"].(bool)
+	length := intOrDefault(settings["length"], 16)
+	availableCharacters := stringOrDefault(settings["available_character"], "")
+	asSpecialCharacter := boolOrDefault(settings["as_special_character"], true)
+	asUpperCase := boolOrDefault(settings["as_upper_case"], true)
+	asLowerCase := boolOrDefault(settings["as_lower_case"], true)
+	asDigit := boolOrDefault(settings["as_digit"], true)
 
 	availableChars := ""
-	if hasAvailableCharacters {
+	if availableCharacters != "" {
 		availableChars = availableCharacters
 	} else {
 		if asUpperCase {
@@ -103,7 +111,7 @@ func generateRandomValue(settings map[string]interface{}) string {
 		}
 	}
 
-	result := make([]byte, lenght)
+	result := make([]byte, length)
 	for i := range result {
 		result[i] = availableChars[rand.Intn(len(availableChars))]
 	}
