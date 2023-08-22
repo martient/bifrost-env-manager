@@ -93,7 +93,7 @@ Using config file: config.json
 ``` shell
 ❯ bifrost-env-manager generate --config config.json
 Using config file: config.json
-/somewhere/else/example.env file generated successfully!
+.example.env file generated successfully!
 ```
 
 ##### Specific file path
@@ -101,7 +101,7 @@ Using config file: config.json
 ``` shell
 ❯ bifrost-env-manager generate --path /somewhere/else/
 Using config file: config.json
-/somewhere/else/example.env file generated successfully!
+/somewhere/else/.example.env file generated successfully!
 ```
 
 ### Config
