@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	environmentmanager "github.com/martient/Bifrost-env-manager/pkg/environment_manager"
+	environmentmanager "github.com/martient/bifrost-env-manager/pkg/environment_manager"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +18,9 @@ var generateCmd = &cobra.Command{
 	Short: "Generate a new version of the env file",
 	Long:  `Generate a new version of the environement file in function of the config given`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if !disableUpdateCheck {
+			doConfirmAndSelfUpdate()
+		}
 		jsonFile, err := os.Open(jsonConfigFile)
 		if err != nil {
 			fmt.Println(err)

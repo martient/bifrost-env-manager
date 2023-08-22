@@ -9,6 +9,8 @@ import (
 )
 
 var jsonConfigFile string
+var disableUpdateCheck bool
+var BEMversion string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -22,13 +24,13 @@ var rootCmd = &cobra.Command{
 	// to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute(version string) {
-	rootCmd.Version = version
+func Execute(versionFormated string, version string) {
+	rootCmd.Version = versionFormated
+	BEMversion = version
 	cobra.CheckErr(rootCmd.Execute())
 }
 
@@ -44,7 +46,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().BoolP("disable-update-check", "", false, "Disable auto update checking before execution")
+	rootCmd.PersistentFlags().BoolVarP(&disableUpdateCheck, "disable-update-check", "", false, "Disable auto update checking before execution")
 }
 
 func initConfig() {
