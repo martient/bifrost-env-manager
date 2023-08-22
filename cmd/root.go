@@ -27,13 +27,15 @@ var rootCmd = &cobra.Command{
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+func Execute(version string) {
+	rootCmd.Version = version
 	cobra.CheckErr(rootCmd.Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
+	rootCmd.SetVersionTemplate(`{{with .Name}}{{printf   .}}{{end}} {{printf  .Version}}`)
 	rootCmd.PersistentFlags().StringVar(&jsonConfigFile, "config", "config.json", "config file for this software environement")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -43,9 +45,6 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.PersistentFlags().BoolP("disable-update-check", "", false, "Disable auto update checking before execution")
-
-	// rootCmd.PersistentFlags().CallbackVarP(runner.GetUpdateCallback(), "update", "up", "update notify to latest version")
-	// rootCmd.PersistentFlags().BoolVarP(&options.DisableUpdateCheck, "disable-update-check", "duc", false, "disable automatic notify update check")
 }
 
 func initConfig() {

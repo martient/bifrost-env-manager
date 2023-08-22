@@ -1,7 +1,17 @@
 package main
 
-import "github.com/martient/Bifrost-env-manager/cmd"
+import (
+	"fmt"
+
+	"github.com/martient/Bifrost-env-manager/cmd"
+)
+
+var (
+	version = "dev"
+	commit  = "none"
+	date    = "unknown"
+)
 
 func main() {
-	cmd.Execute()
+	cmd.Execute(fmt.Sprintf("version %s, commit %s, built at %s\n", version, commit, date))
 }
