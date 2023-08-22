@@ -33,7 +33,8 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&jsonConfigFile, "config", "", "config file for this software environement")
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+	rootCmd.PersistentFlags().StringVar(&jsonConfigFile, "config", "config.json", "config file for this software environement")
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -50,8 +51,6 @@ func init() {
 func initConfig() {
 	if jsonConfigFile != "" {
 		viper.SetConfigFile(jsonConfigFile)
-	} else {
-		os.Exit(1)
 	}
 
 	fmt.Println(rootCmd.Flag("disable-update-check").Value)
