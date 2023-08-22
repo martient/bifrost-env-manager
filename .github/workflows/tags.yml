@@ -9,7 +9,7 @@ on:
 
   push:
       branches:
-        - master
+        - main
 jobs:
   build:
     if: github.event.pull_request.merged == true
