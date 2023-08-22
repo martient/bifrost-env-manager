@@ -19,4 +19,5 @@ type Config struct {
 	RandomValueVariables []Variable
 	CustomValueVariables []Variable
 	EnvVariables         []Variable
+	ReadOnlyVariables    []Variable
 }
