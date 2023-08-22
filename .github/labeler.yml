@@ -1,0 +1,32 @@
+# Add 'repo' label to any root file changes
+'repository config':
+- '.github/**'
+
+cli:
+- 'cmd/**'
+
+models:
+- 'pkg/**/models.go'
+
+utils:
+- 'pkg/**/utils.go'
+
+'environment_manager':
+- 'pkg/environment_manager'
+
+test:
+- src/**/*_test.go
+
+docs:
+- '**.md'
+
+setup:
+- '.github/**'
+- 'Makefile'
+- 'go.mod'
+- 'go.sum'
+- '.gitignore'
+
+package:
+- 'go.mod'
+- 'go.sum'
