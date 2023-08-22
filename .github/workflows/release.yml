@@ -1,9 +1,13 @@
 name: goreleaser
 
 on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
   push:
     branches:
-      - 'main'
       - 'develop'
 
 
@@ -13,10 +17,20 @@ permissions:
   issues: write
 
 jobs:
-  goreleaser-prod:
-    if: ${{ github.ref_name == 'main' }}
+  production:
+    if: github.event.pull_request.merged == true && github.ref_name == 'main'
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: '0'
+
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.64.0
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          WITH_V: true
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -32,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
-  goreleaser-nightly:
+  nightly:
     if: ${{ github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
     steps:
