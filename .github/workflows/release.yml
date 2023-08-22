@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   goreleaser-prod:
-    if: ${{ GITHUB_REF_NAME == 'main' }}
+    if: ${{ github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   goreleaser-nightly:
-    if: ${{ GITHUB_REF_NAME == 'develop' }}
+    if: ${{ github.ref_name == 'develop' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
