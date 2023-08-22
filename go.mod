@@ -1,10 +1,27 @@
-module github.com/martient/Bifrost-env-manager
+module github.com/martient/bifrost-env-manager
 
 go 1.19
 
 require github.com/spf13/cobra v1.7.0
 
 require (
+	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/google/go-github/v30 v30.1.0 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf // indirect
+	github.com/rhysd/go-github-selfupdate v1.2.3 // indirect
+	github.com/tcnksm/go-gitconfig v0.1.2 // indirect
+	github.com/ulikunitz/xz v0.5.9 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/oauth2 v0.7.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.30.0 // indirect
+)
+
+require (
+	github.com/Masterminds/semver v1.5.0
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
