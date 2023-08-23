@@ -8,7 +8,22 @@ import (
 	"github.com/blang/semver"
 	"github.com/martient/bifrost-env-manager/pkg/utils"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
+	"github.com/spf13/cobra"
 )
+
+// updateCmd represents the load command
+var updateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Check if new version is available",
+	Long:  `Check on the official github release if a new version is available and then ask you if you want to update to it`,
+	Run: func(cmd *cobra.Command, args []string) {
+		doConfirmAndSelfUpdate()
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(updateCmd)
+}
 
 func doConfirmAndSelfUpdate() {
 	latest, found, err := selfupdate.DetectLatest("martient/bifrost-env-manager")
