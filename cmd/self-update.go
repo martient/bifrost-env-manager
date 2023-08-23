@@ -28,13 +28,13 @@ func init() {
 func doConfirmAndSelfUpdate() {
 	latest, found, err := selfupdate.DetectLatest("martient/bifrost-env-manager")
 	if err != nil {
-		utils.LogError("Error occurred while detecting version:", err, "Updater")
+		utils.LogError("Error occurred while detecting version:\n", err, "Updater")
 		return
 	}
 
 	v := semver.MustParse(BEMversion)
 	if !found || latest.Version.LTE(v) {
-		utils.LogInfo("Current version is the latest", "", "Updater")
+		utils.LogInfo("Current version is the latest\n", "", "Updater")
 		return
 	}
 
@@ -42,7 +42,7 @@ func doConfirmAndSelfUpdate() {
 		fmt.Print("Do you want to update to", latest.Version, "? (y/n): ")
 		input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 		if err != nil || (input != "y\n" && input != "n\n") {
-			utils.LogError("Invalid input %s", err, "Updater")
+			utils.LogError("Invalid input %s\n", err, "Updater")
 			return
 		}
 		if input == "n\n" {
@@ -52,12 +52,12 @@ func doConfirmAndSelfUpdate() {
 
 	exe, err := os.Executable()
 	if err != nil {
-		utils.LogError("Could not locate executable path: %s", err, "Updater")
+		utils.LogError("Could not locate executable path: %s\n", err, "Updater")
 		return
 	}
 	if err := selfupdate.UpdateTo(latest.AssetURL, exe); err != nil {
-		utils.LogError("Error occurred while updating binary: %s", err, "Updater")
+		utils.LogError("Error occurred while updating binary: %s\n", err, "Updater")
 		return
 	}
-	utils.LogInfo("Successfully updated to version %s", latest.Version, "Updater")
+	utils.LogInfo("Successfully updated to version %s\n", latest.Version, "Updater")
 }
