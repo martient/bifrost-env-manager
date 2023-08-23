@@ -15,13 +15,26 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 
 	var config Config
 	var jsonRead map[string]interface{}
+	var fileName string = ""
+
 	err := json.Unmarshal([]byte(configJSON), &config)
 	json.Unmarshal([]byte(configJSON), &jsonRead)
 	if err != nil {
 		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
 		return 1
 	}
+
+	if config.Filename != "" {
+		fileName = config.Filename
+	} else {
+		fileName = ".env"
+	}
+	var outputFilePath string = newEnvFilePath + fileName
+
 	generateEnvVariables(&config)
+
+	generateExistingVariables(&config, outputFilePath)
+
 	generateReadOnlyVariables(&config, readOnlyEnvFilesPath)
 
 	err = generateStaticVariables(&config, jsonRead)
@@ -39,14 +52,6 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
 		return 1
 	}
-
-	var fileName string = ""
-	if config.Filename != "" {
-		fileName = config.Filename
-	} else {
-		fileName = ".env"
-	}
-	var outputFilePath string = newEnvFilePath + fileName
 
 	err = writeVariablesToFile(&config, outputFilePath)
 	if err != nil {
@@ -78,6 +83,21 @@ func readEnvFile(filePath string) ([]string, error) {
 		return lines, nil
 	} else {
 		return nil, err
+	}
+}
+
+func generateExistingVariables(config *Config, outputFilePath string) {
+	lines, err := readEnvFile(outputFilePath)
+
+	if err != nil {
+		utils.LogDebug("Error parsing existing env files: %s", err, "Environment manager")
+	}
+
+	for _, line := range lines {
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 {
+			config.ExistingVariables = append(config.ExistingVariables, Variable{Key: parts[0], Value: parts[1]})
+		}
 	}
 }
 
@@ -177,6 +197,7 @@ func generateCustomValueVariables(config *Config, jsonRead map[string]interface{
 
 			var value string = replacePlaceholders(line, CustomValues)
 			value = replacePlaceholders(value, config.StaticVariables)
+			value = replacePlaceholders(value, config.ExistingVariables)
 			value = replacePlaceholders(value, config.RandomValueVariables)
 			value = replacePlaceholders(value, config.ReadOnlyVariables)
 			value = replacePlaceholders(value, config.EnvVariables)
@@ -194,21 +215,6 @@ func replacePlaceholders(line string, values []Variable) string {
 }
 
 func writeVariablesToFile(config *Config, outputFilePath string) error {
-	var existingVars []EnvFileVariable
-
-	readEnvFileLines, err := readEnvFile(outputFilePath)
-
-	if err != nil {
-		utils.LogDebug("Error parsing existing env files: %s", err, "Environment manager")
-	}
-
-	for _, line := range readEnvFileLines {
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) == 2 {
-			existingVars = append(existingVars, EnvFileVariable{Key: parts[0], Value: parts[1], Exist: true})
-		}
-	}
-
 	var lines []string
 
 	for _, variable := range config.StaticVariables {
@@ -216,28 +222,22 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 	}
 
 	for _, variable := range config.RandomValueVariables {
-		exisingVariable := searchExistingVariable(variable.Key, existingVars)
-		if !exisingVariable.Exist {
+		exisingVariable := searchExistingVariable(variable.Key, config)
+		if exisingVariable == nil {
+			utils.LogInfo("Existing avariable null %s", exisingVariable, "env mana")
 			lines = append(lines, variable.Key+"="+variable.Value)
 		} else {
 			lines = append(lines, exisingVariable.Key+"="+exisingVariable.Value)
-
 		}
 	}
 
 	for _, variable := range config.CustomValueVariables {
-		exisingVariable := searchExistingVariable(variable.Key, existingVars)
-
-		if !exisingVariable.Exist {
-			lines = append(lines, variable.Key+"="+variable.Value)
-		} else {
-			lines = append(lines, exisingVariable.Key+"="+exisingVariable.Value)
-		}
+		lines = append(lines, variable.Key+"="+variable.Value)
 	}
 
 	content := strings.Join(lines, "\n")
 
-	err = os.WriteFile(outputFilePath, []byte(content), 0644)
+	err := os.WriteFile(outputFilePath, []byte(content), 0644)
 	if err != nil {
 		return err
 	}
@@ -245,11 +245,11 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 	return nil
 }
 
-func searchExistingVariable(key string, variables []EnvFileVariable) EnvFileVariable {
-	for _, searchVar := range variables {
+func searchExistingVariable(key string, config *Config) *Variable {
+	for _, searchVar := range config.ExistingVariables {
 		if key == searchVar.Key {
-			return searchVar
+			return &searchVar
 		}
 	}
-	return EnvFileVariable{Key: key, Exist: false}
+	return nil
 }
