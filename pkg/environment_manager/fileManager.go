@@ -124,6 +124,10 @@ func generateReadOnlyVariables(config *Config, readOnlyEnvFilesPath string) {
 }
 
 func generateStaticVariables(config *Config, jsonRead map[string]interface{}) error {
+	_, isDefine := jsonRead["static_variables"].([]interface{})
+	if !isDefine {
+		return nil
+	}
 	for _, variable := range jsonRead["static_variables"].([]interface{}) {
 		if v, ok := variable.(map[string]interface{}); ok {
 			for key, value := range v {
@@ -135,6 +139,10 @@ func generateStaticVariables(config *Config, jsonRead map[string]interface{}) er
 }
 
 func generateRandomValueVariables(config *Config, jsonRead map[string]interface{}) error {
+	_, isDefine := jsonRead["random_value_variables"].([]interface{})
+	if !isDefine {
+		return nil
+	}
 	for _, variable := range jsonRead["random_value_variables"].([]interface{}) {
 		if v, ok := variable.(map[string]interface{}); ok {
 			var key string = v["key"].(string)
@@ -180,17 +188,24 @@ func generateRandomValue(settings map[string]interface{}) string {
 }
 
 func generateCustomValueVariables(config *Config, jsonRead map[string]interface{}) error {
+	_, isDefine := jsonRead["custom_value_variables"].([]interface{})
+	if !isDefine {
+		return nil
+	}
 	for _, variable := range jsonRead["custom_value_variables"].([]interface{}) {
 		if v, ok := variable.(map[string]interface{}); ok {
 			var key string = v["key"].(string)
 			var line string = v["line"].(string)
 			var CustomValues []Variable
 
-			for _, variable := range v["values"].([]interface{}) {
-				if v, ok := variable.(map[string]interface{}); ok {
-					for key, value := range v {
-						var subValueOfCustomValueVariable Variable = Variable{Key: key, Value: value.(string)}
-						CustomValues = append(CustomValues, subValueOfCustomValueVariable)
+			_, isDefine := v["values"].([]interface{})
+			if isDefine {
+				for _, variable := range v["values"].([]interface{}) {
+					if v, ok := variable.(map[string]interface{}); ok {
+						for key, value := range v {
+							var subValueOfCustomValueVariable Variable = Variable{Key: key, Value: value.(string)}
+							CustomValues = append(CustomValues, subValueOfCustomValueVariable)
+						}
 					}
 				}
 			}
