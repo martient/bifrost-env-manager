@@ -239,7 +239,6 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 	for _, variable := range config.RandomValueVariables {
 		exisingVariable := searchExistingVariable(variable.Key, config)
 		if exisingVariable == nil {
-			utils.LogInfo("Existing avariable null %s", exisingVariable, "env mana")
 			lines = append(lines, variable.Key+"="+variable.Value)
 		} else {
 			lines = append(lines, exisingVariable.Key+"="+exisingVariable.Value)
