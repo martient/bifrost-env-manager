@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/blang/semver"
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 	"github.com/rhysd/go-github-selfupdate/selfupdate"
 	"github.com/spf13/cobra"
 )

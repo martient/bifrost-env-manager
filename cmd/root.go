@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

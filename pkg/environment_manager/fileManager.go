@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 )
 
 func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesPath string) int {

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	environmentmanager "github.com/martient/bifrost-env-manager/pkg/environment_manager"
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 	"github.com/spf13/cobra"
 )
 
