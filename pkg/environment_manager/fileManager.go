@@ -20,7 +20,7 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 	err := json.Unmarshal([]byte(configJSON), &config)
 	json.Unmarshal([]byte(configJSON), &jsonRead)
 	if err != nil {
-		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		utils.LogError("Error parsing config JSON: %s", "Environment manager", err)
 		return 1
 	}
 
@@ -39,27 +39,27 @@ func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesP
 
 	err = generateStaticVariables(&config, jsonRead)
 	if err != nil {
-		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		utils.LogError("Error parsing config JSON: %s", "Environment manager", err)
 		return 1
 	}
 	err = generateRandomValueVariables(&config, jsonRead)
 	if err != nil {
-		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		utils.LogError("Error parsing config JSON: %s", "Environment manager", err)
 		return 1
 	}
 	err = generateCustomValueVariables(&config, jsonRead)
 	if err != nil {
-		utils.LogError("Error parsing config JSON: %s", err, "Environment manager")
+		utils.LogError("Error parsing config JSON: %s", "Environment manager", err)
 		return 1
 	}
 
 	err = writeVariablesToFile(&config, outputFilePath)
 	if err != nil {
-		utils.LogError("Error writing to .env file:", err, "Environment manager")
+		utils.LogError("Error writing to .env file:", "Environment manager", err)
 		return 1
 	}
 
-	utils.LogInfo("%s file generated successfully!\n", outputFilePath, "Environment manager")
+	utils.LogInfo("%s file generated successfully!\n", "Environment manager", outputFilePath)
 	return 0
 }
 
@@ -90,7 +90,7 @@ func generateExistingVariables(config *Config, outputFilePath string) {
 	lines, err := readEnvFile(outputFilePath)
 
 	if err != nil {
-		utils.LogDebug("Error parsing existing env files: %s", err, "Environment manager")
+		utils.LogDebug("Error parsing existing env files: %s", "Environment manager", err)
 	}
 
 	for _, line := range lines {
@@ -109,7 +109,7 @@ func generateReadOnlyVariables(config *Config, readOnlyEnvFilesPath string) {
 			lines, err := readEnvFile(file)
 
 			if err != nil {
-				utils.LogError("Error parsing existing env files: %s", err, "Environment manager")
+				utils.LogError("Error parsing existing env files: %s", "Environment manager", err)
 				continue
 			}
 

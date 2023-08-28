@@ -151,6 +151,8 @@ github.com/magiconair/properties v1.8.7 h1:IeQXZAiQcpL9mgcAe1Nu6cX9LLw6ExEHKjN0V
 github.com/magiconair/properties v1.8.7/go.mod h1:Dhd985XPs7jluiymwWYZ0G4Z61jb3vdS329zhj2hYo0=
 github.com/martient/golang-utils v1.0.0 h1:On/tpk7Ld5ZRaCHxJyYopWGFa6XY5BJDInHO0ufK+nk=
 github.com/martient/golang-utils v1.0.0/go.mod h1:EWGLZOgiBaatrRH1D4BXFgTjMRVd4CX8ah4xiL2lf+I=
+github.com/martient/golang-utils v1.4.0 h1:wGYJJQPAKguGb87OSYV+tsgikx2p8O3ZmZqCBe2ITZs=
+github.com/martient/golang-utils v1.4.0/go.mod h1:qHxg96tYmy8FGFhdBQzxUCh80Pca5NkyqktqWulQOGQ=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
 github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
