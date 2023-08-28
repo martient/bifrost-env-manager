@@ -10,7 +10,7 @@ Environment variables are classified into three categories: static, random, and 
 
 - **Static variables:** These are straightforward key-value pairs that remain unchanged.
 - **Random value variables:** These variables are generated once and stored securely.
-- **Custom value variables:** These variables are constructed using predefined rules and can include references to other variables.
+- **Custom value variables:** These variables are (re)constructed using predefined rules and can include references to other variables.
 
 ## 🔑 Key Value Definitions
 

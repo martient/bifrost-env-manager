@@ -5,7 +5,7 @@ import (
 	"os"
 
 	environmentmanager "github.com/martient/bifrost-env-manager/pkg/environment_manager"
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +23,7 @@ var generateCmd = &cobra.Command{
 		}
 		jsonFile, err := os.Open(jsonConfigFile)
 		if err != nil {
-			utils.LogError("Something went wrong during the config openning", err, "CLI")
+			utils.LogError("Something went wrong during the config openning", "CLI", err)
 			os.Exit(1)
 		}
 		defer jsonFile.Close()

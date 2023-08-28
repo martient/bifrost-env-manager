@@ -11,8 +11,13 @@
             "mode": "debug",
             "program": "main.go",
             "args": [
-                "generate"
+                "--disable-update-check",
+                "generate",
+                "--config",
+                "example.config.json"
             ],
+            "buildFlags": "-ldflags='-X main.version=0.1.0-beta.0'",
+
         }
 
     ]

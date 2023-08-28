@@ -1,11 +1,5 @@
 package environmentmanager
 
-type EnvFileVariable struct {
-	Key   string
-	Value string
-	Exist bool
-}
-
 type Variable struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -20,4 +14,5 @@ type Config struct {
 	CustomValueVariables []Variable
 	EnvVariables         []Variable
 	ReadOnlyVariables    []Variable
+	ExistingVariables    []Variable
 }

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/martient/bifrost-env-manager/pkg/utils"
+	"github.com/martient/golang-utils/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -56,6 +56,6 @@ func initConfig() {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		utils.LogInfo("Using config file: %s", viper.ConfigFileUsed(), "CLI")
+		utils.LogInfo("Using config file: %s", "CLI", viper.ConfigFileUsed())
 	}
 }
