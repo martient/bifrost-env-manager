@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/martient/golang-utils/utils"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func GenerateEnvFile(configJSON []byte, newEnvFilePath string, readOnlyEnvFilesPath string) int {
@@ -222,8 +224,33 @@ func generateCustomValueVariables(config *Config, jsonRead map[string]interface{
 	return nil
 }
 
+func formatVariableWithFlag(value string, flag string) string {
+	switch flag {
+	case "UPPERCASE":
+		return strings.ToUpper(value)
+	case "LOWERCASE":
+		return strings.ToLower(value)
+	case "CAPITALIZE":
+		return cases.Title(language.Und).String(value)
+	case "POSTGRESQL_MODEL":
+		return strings.ReplaceAll(value, "-", "_")
+	default:
+		return value
+	}
+}
+
 func replacePlaceholders(line string, values []Variable) string {
 	for _, variable := range values {
+		var toReplaceWithFlag []string
+
+		for _, flag := range FLAGS {
+			if strings.Contains(line, "{{ "+variable.Key+" %"+flag+"% }}") {
+				toReplaceWithFlag = append(toReplaceWithFlag, flag)
+			}
+		}
+		for _, flagToUseDuringReplace := range toReplaceWithFlag {
+			line = strings.ReplaceAll(line, "{{ "+variable.Key+" %"+flagToUseDuringReplace+"% }}", formatVariableWithFlag(variable.Value, flagToUseDuringReplace))
+		}
 		line = strings.ReplaceAll(line, "{{ "+variable.Key+" }}", variable.Value)
 	}
 	return line
