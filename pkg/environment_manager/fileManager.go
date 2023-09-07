@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math/rand"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -212,12 +213,12 @@ func generateCustomValueVariables(config *Config, jsonRead map[string]interface{
 				}
 			}
 
-			var value string = replacePlaceholders(line, CustomValues)
-			value = replacePlaceholders(value, config.StaticVariables)
-			value = replacePlaceholders(value, config.ExistingVariables)
-			value = replacePlaceholders(value, config.RandomValueVariables)
-			value = replacePlaceholders(value, config.ReadOnlyVariables)
-			value = replacePlaceholders(value, config.EnvVariables)
+			var value string = replacePlaceholders(line, CustomValues, config)
+			value = replacePlaceholders(value, config.StaticVariables, config)
+			value = replacePlaceholders(value, config.ExistingVariables, config)
+			value = replacePlaceholders(value, config.RandomValueVariables, config)
+			value = replacePlaceholders(value, config.ReadOnlyVariables, config)
+			value = replacePlaceholders(value, config.EnvVariables, config)
 			config.CustomValueVariables = append(config.CustomValueVariables, Variable{Key: key, Value: value})
 		}
 	}
@@ -239,19 +240,56 @@ func formatVariableWithFlag(value string, flag string) string {
 	}
 }
 
-func replacePlaceholders(line string, values []Variable) string {
+func checkIfVariableExistAnyConfig(target string, config *Config) bool {
+	if searchIfVariableExist(target, config.CustomValueVariables) != nil || searchIfVariableExist(target, config.StaticVariables) != nil || searchIfVariableExist(target, config.ExistingVariables) != nil || searchIfVariableExist(target, config.RandomValueVariables) != nil || searchIfVariableExist(target, config.ReadOnlyVariables) != nil || searchIfVariableExist(target, config.EnvVariables) != nil {
+		return true
+	}
+	return false
+}
+
+func parseInsideCustomVarString(input string, variableToFind string, config *Config) (string, string) {
+	re := regexp.MustCompile(`{{\s*(\w+)\s*\|\|\s*(\w+)\s*`)
+
+	matches := re.FindAllStringSubmatch(input, -1)
+	if checkIfVariableExistAnyConfig(matches[0][2], config) {
+		return matches[0][2], "{{ " + matches[0][1] + " || " + matches[0][2]
+	}
+	return matches[0][1], "{{ " + matches[0][1] + " || " + matches[0][2]
+}
+
+func replacePlaceholders(line string, values []Variable, config *Config) string {
 	for _, variable := range values {
-		var toReplaceWithFlag []string
+		var flagsToReplace []string
+		var keyChanged bool = false
+
+		var target string = variable.Key
+		if strings.Contains(line, "{{ "+variable.Key+" ||") {
+			replace, targetForReplace := parseInsideCustomVarString(line, variable.Key, config)
+			target = replace
+			line = strings.ReplaceAll(line, targetForReplace, "{{ "+target)
+			keyChanged = true
+		}
 
 		for _, flag := range FLAGS {
 			if strings.Contains(line, "{{ "+variable.Key+" %"+flag+"% }}") {
-				toReplaceWithFlag = append(toReplaceWithFlag, flag)
+				flagsToReplace = append(flagsToReplace, flag)
 			}
 		}
-		for _, flagToUseDuringReplace := range toReplaceWithFlag {
+		for _, flagToUseDuringReplace := range flagsToReplace {
 			line = strings.ReplaceAll(line, "{{ "+variable.Key+" %"+flagToUseDuringReplace+"% }}", formatVariableWithFlag(variable.Value, flagToUseDuringReplace))
+
 		}
-		line = strings.ReplaceAll(line, "{{ "+variable.Key+" }}", variable.Value)
+		if strings.Contains(line, "{{ "+variable.Key+" }}") {
+			line = strings.ReplaceAll(line, "{{ "+variable.Key+" }}", variable.Value)
+		} else if keyChanged {
+			line = replacePlaceholders(line, config.CustomValueVariables, config)
+			line = replacePlaceholders(line, config.StaticVariables, config)
+			line = replacePlaceholders(line, config.ExistingVariables, config)
+			line = replacePlaceholders(line, config.RandomValueVariables, config)
+			line = replacePlaceholders(line, config.ReadOnlyVariables, config)
+			line = replacePlaceholders(line, config.EnvVariables, config)
+			keyChanged = false
+		}
 	}
 	return line
 }
@@ -287,7 +325,11 @@ func writeVariablesToFile(config *Config, outputFilePath string) error {
 }
 
 func searchExistingVariable(key string, config *Config) *Variable {
-	for _, searchVar := range config.ExistingVariables {
+	return searchIfVariableExist(key, config.ExistingVariables)
+}
+
+func searchIfVariableExist(key string, variables []Variable) *Variable {
+	for _, searchVar := range variables {
 		if key == searchVar.Key {
 			return &searchVar
 		}
