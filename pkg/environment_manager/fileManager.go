@@ -235,6 +235,18 @@ func formatVariableWithFlag(value string, flag string) string {
 		return cases.Title(language.Und).String(value)
 	case "POSTGRESQL_MODEL":
 		return strings.ReplaceAll(value, "-", "_")
+	case "POSTGRESQL_URL_FORMAT":
+		value = strings.ReplaceAll(value, " ", "%20")
+		value = strings.ReplaceAll(value, "%", "%25")
+		value = strings.ReplaceAll(value, "&", "%26")
+		value = strings.ReplaceAll(value, "/", "%2F")
+		value = strings.ReplaceAll(value, ":", "%3A")
+		value = strings.ReplaceAll(value, "=", "%3D")
+		value = strings.ReplaceAll(value, "?", "%3F")
+		value = strings.ReplaceAll(value, "@", "%40")
+		value = strings.ReplaceAll(value, "[", "%5B")
+		value = strings.ReplaceAll(value, "]", "%5D")
+		return value
 	default:
 		return value
 	}
